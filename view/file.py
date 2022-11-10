@@ -1,9 +1,15 @@
 from flask import Blueprint, session, redirect, url_for, render_template
 from pymongo import MongoClient
 #------------------------------------------------------------------------
+from secret.secret import mongo_dbid, mongo_dbpw, mongo_dbaddr, mongo_dbport
+#------------------------------------------------------------------------
 file = Blueprint("file", __name__, url_prefix="/file")
 #------------------------------------------------------------------------
-
+client = MongoClient(host=mongo_dbaddr, port=mongo_dbport, username=mongo_dbid, password=mongo_dbpw)
+db = client['ds']
+col_uf = db['uploaded_file']
+col_f4g = db['file4group']
+col_s4g = db['schedule4group']
 #------------------------------------------------------------------------
 #!!! 입 또는 출력이 리스트인 경우는 사이즈가 1인 리스트의 경우를 포함함
 @file.route("/")
@@ -12,10 +18,9 @@ def fileIndex():
 
 #현재 서버에 업로드된 파일들을 출력
 #입력없음 출력리스트
-@file.route("/jFilesOut2S")
+@file.route("/jFilesOut4S")
 def jFilesOut2S():
-	location = "files" + session['id']
-	names, dates_edit = u.outDirList(location)
+	print(col_uf.find())
 	return render_template('file_setting.html', names=names, dates_edit=dates_edit, use=u.outDirByte(location))
 
 #서버에 파일 업로드

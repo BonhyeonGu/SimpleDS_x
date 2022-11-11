@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>fileIndex</title>
+	<script src ="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src ="https://code.jquery.com/jquery-migrate-3.3.2.js"></script>
+
+	<script src="{{ url_for('static', filename='js/videoSet.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+
+    <link rel="stylesheet" href=" {{ url_for('static', filename='css/index.css') }} ">
+	<link rel="stylesheet" href=" {{ url_for('static', filename='css/videoSet.css') }} ">
+</head>
+
+<body>
+    <form action="/file/upload" method="POST" enctype="multipart/form-data">
+        <input type = "file" name = "file" >
+        <input type = "submit" />
+        <!-- <div class="filebox">
+            <input class="upload-name" value="choose" disabled="disabled">
+            <label for="file">파일선택</label>
+            <input type="file" name = "file" id="file" class="upload-hidden" />
+            <input type = "submit" id="sm" />
+        </div> -->
+    </form>
+</body>
+</html>

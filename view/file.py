@@ -1,4 +1,5 @@
-from flask import Blueprint, session, redirect, url_for, render_template
+from flask import Blueprint, session, redirect, url_for, render_template, jsonify, request
+from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 #------------------------------------------------------------------------
 from secret.secret import mongo_dbid, mongo_dbpw, mongo_dbaddr, mongo_dbport
@@ -12,13 +13,15 @@ col_f4g = db['file4group']
 col_s4g = db['schedule4group']
 #------------------------------------------------------------------------
 #!!! 입 또는 출력이 리스트인 경우는 사이즈가 1인 리스트의 경우를 포함함
+#앞글자가 a인 것은 출력이 중요하지 않음, j는 출력이 중요함
+
 @file.route("/")
 def fileIndex():
 	return render_template('fileIndex.html')
 
 #현재 서버에 업로드된 파일들을 출력
 #입력없음 출력리스트
-@file.route("/jFilesOut4S")
+@file.route("/jFilesOut2S")
 def jFilesOut2S():
 	print(col_uf.find())
 	return render_template('file_setting.html', names=names, dates_edit=dates_edit, use=u.outDirByte(location))
@@ -27,18 +30,16 @@ def jFilesOut2S():
 #입력없음 출력없음
 @file.route("/upload", methods=['POST'])
 def upload():
-	if not 'no' in session:
-		return redirect(url_for('login'))
-	location = "files" + session['id']
-	file = request.files['file']
-	
-	file.save(u.pathJoin(location, file.filename))
-	return redirect(url_for('file_setting'))
+	inp_file = request.files['file']
+	inp_file.save('./files/' + secure_filename(inp_file.filename))
+
+	return render_template('fileIndex.html')
+
 
 #서버에 업로드된 파일을 삭제 (GID가 사용중인지 확인? 또는 강제로?)
-#입력리스트 출력없음
-@file.route("/jsonG2Files")
-def jsonG2Files():
+#입력{gid, 파일리스트} 출력없음
+@file.route("/aDeleteFiles")
+def aDeleteFiles():
 	if not 'no' in session:
 		return redirect(url_for('login'))
 	location = "files" + session['id']
@@ -46,9 +47,9 @@ def jsonG2Files():
 	return render_template('file_setting.html', names=names, dates_edit=dates_edit, use=u.outDirByte(location))
 
 #해당 GID가 '사용하고 있는' 파일들을 출력
-#입력없음 출력리스트
-@file.route("/jsonG2Files")
-def jsonG2Files():
+#입력gid 출력리스트
+@file.route("/jUsedFiles")
+def jUsedFiles():
 	if not 'no' in session:
 		return redirect(url_for('login'))
 	location = "files" + session['id']
@@ -56,9 +57,9 @@ def jsonG2Files():
 	return render_template('file_setting.html', names=names, dates_edit=dates_edit, use=u.outDirByte(location))
 
 #해당 GID가 '사용하지 않는' 파일 a를 '사용하고 있는'으로 수정
-#입력리스트 출력없음
-@file.route("/jsonG2Files")
-def jsonG2Files():
+#입력{gid, 파일리스트} 출력없음
+@file.route("/aNot2Used")
+def aNot2Used():
 	if not 'no' in session:
 		return redirect(url_for('login'))
 	location = "files" + session['id']
@@ -66,9 +67,9 @@ def jsonG2Files():
 	return render_template('file_setting.html', names=names, dates_edit=dates_edit, use=u.outDirByte(location))
 
 #해당 GID가 '사용하고 있는' 파일 a를 '사용하지 않는'으로 수정
-#입력리스트 출력없음
-@file.route("/jsonG2Files")
-def jsonG2Files():
+#입력 {gid, 파일리스트} 출력없음
+@file.route("/aUsed2Not")
+def aUsed2Not():
 	if not 'no' in session:
 		return redirect(url_for('login'))
 	location = "files" + session['id']

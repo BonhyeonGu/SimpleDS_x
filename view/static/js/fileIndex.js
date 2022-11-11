@@ -25,9 +25,9 @@ function deleteFile(){
             contentType: "application/json",
             data: JSON.stringify({fileName : $("#deleteInp").val()}),
             success: function(res){
+                reloadFileList();
             }
         });
-        reloadFileList();
     });
 }
 
@@ -38,4 +38,5 @@ $(document).ready(function(){
     };
     reloadFileList();
     deleteFile();
+    uploadFile();
 });

@@ -1,7 +1,7 @@
 from flask import Blueprint, session, redirect, url_for, render_template, jsonify, request
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
-from os import listdir, remove
+from os import listdir, remove, path
 from datetime import datetime
 import cv2
 #------------------------------------------------------------------------
@@ -16,6 +16,7 @@ col_f4g = db['file4group']
 col_s4g = db['schedule4group']
 LOCATION = './files/'
 #------------------------------------------------------------------------
+videoFormat = ['mp4', 'avi', 'mkv']
 def get_duration(filename):
     video = cv2.VideoCapture(filename)
     return video.get(cv2.CAP_PROP_POS_MSEC)
@@ -40,13 +41,20 @@ def jFilesOut2S():
 @file.route("/upload", methods=['POST'])
 def upload():
 	inp_file = request.files['file']
-	inp_des = request.files['des']
-	nowDate = datetime.today().strftime("%Y%m%d%H%M%S")
-	inp_file.
-	inp_file.save(LOCATION + secure_filename(inp_file.filename))
+	#--------------------------------------------------
+	inp_name = inp_file.filename.replace(' ', '_')
+	#--------------------------------------------------
+	inp_file.save(LOCATION + secure_filename(inp_name))
+	inp_date = datetime.today().strftime("%Y%m%d%H%M%S")
+	inp_duration = '-'
+	if inp_name[-3:] in videoFormat:
+		inp_duration = get_duration(LOCATION + inp_name)
+	inp_byte = path.getsize(LOCATION + inp_name)
 	doc = {
-		"name" : inp_file,
-		"des" : 
+		"name" : inp_name,
+		"inp_date" : inp_date,
+		"inp_duration" : inp_duration,
+		"inp_byte" : inp_byte
 	}
 	col_uf.insert_one(doc)
 	return render_template('fileIndex.html')

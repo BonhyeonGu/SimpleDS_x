@@ -15,7 +15,6 @@ col_uf = db['uploaded_file']
 col_f4g = db['file4group']
 col_s4g = db['schedule4group']
 LOCATION = './files/'
-
 #------------------------------------------------------------------------
 def get_duration(filename):
     video = cv2.VideoCapture(filename)

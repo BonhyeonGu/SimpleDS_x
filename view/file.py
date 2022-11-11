@@ -2,6 +2,8 @@ from flask import Blueprint, session, redirect, url_for, render_template, jsonif
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 from os import listdir, remove
+from datetime import datetime
+import cv2
 #------------------------------------------------------------------------
 from secret.secret import mongo_dbid, mongo_dbpw, mongo_dbaddr, mongo_dbport
 #------------------------------------------------------------------------
@@ -13,6 +15,11 @@ col_uf = db['uploaded_file']
 col_f4g = db['file4group']
 col_s4g = db['schedule4group']
 LOCATION = './files/'
+
+#------------------------------------------------------------------------
+def get_duration(filename):
+    video = cv2.VideoCapture(filename)
+    return video.get(cv2.CAP_PROP_POS_MSEC)
 #------------------------------------------------------------------------
 #!!! 입 또는 출력이 리스트인 경우는 사이즈가 1인 리스트의 경우를 포함함
 #앞글자가 a인 것은 출력이 중요하지 않음, j는 출력이 중요함
@@ -34,7 +41,15 @@ def jFilesOut2S():
 @file.route("/upload", methods=['POST'])
 def upload():
 	inp_file = request.files['file']
+	inp_des = request.files['des']
+	nowDate = datetime.today().strftime("%Y%m%d%H%M%S")
+	inp_file.
 	inp_file.save(LOCATION + secure_filename(inp_file.filename))
+	doc = {
+		"name" : inp_file,
+		"des" : 
+	}
+	col_uf.insert_one(doc)
 	return render_template('fileIndex.html')
 
 #서버에 업로드된 파일을 삭제 (GID가 사용중인지 확인? 또는 강제로?)
